@@ -6,6 +6,7 @@ public class shotgun : MonoBehaviour
 {
     public Rigidbody2D rigidBody;
     public Transform cam;
+    public ParticleSystem shotgunShell;
 
     private float knockbackPower = 800;
     private float recoilPower = 17;
@@ -54,6 +55,9 @@ public class shotgun : MonoBehaviour
         // recoil
         float recoilStrength = recoilPower * rigidBody.inertia;
         rigidBody.AddTorque(recoilStrength, ForceMode2D.Impulse);
+
+        // shotgun shell dropping
+        shotgunShell.Emit(1);
     }
 
     void resetRotation() // if rotation is more than full circle, substract 360
