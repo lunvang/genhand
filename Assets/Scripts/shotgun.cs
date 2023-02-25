@@ -21,6 +21,10 @@ public class shotgun : MonoBehaviour
     {
         snapCamera();
         listenToEvents();
+    }
+
+    private void FixedUpdate()
+    {
         pointToMouse();
     }
 
@@ -45,7 +49,25 @@ public class shotgun : MonoBehaviour
     {
         Vector3 objectPos = Camera.main.WorldToScreenPoint(transform.position);
         Vector3 mousePos = Input.mousePosition - objectPos;
-        var angle = Mathf.Atan2(mousePos.y, mousePos.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+        float targetAngle = Mathf.Atan2(mousePos.y, mousePos.x) * Mathf.Rad2Deg;
+        if (Mathf.Abs(rigidBody.rotation) > 360)
+        {
+            rigidBody.rotation = (Mathf.Abs(rigidBody.rotation) - 360) * Mathf.Sign(rigidBody.rotation);
+        }
+        float objectAngle = rigidBody.rotation;
+        float angleDiff = targetAngle - objectAngle;
+        if (Mathf.Abs(angleDiff) > 180)
+        {
+            angleDiff = (Mathf.Abs(angleDiff) - 360) * Mathf.Sign(angleDiff);
+        }
+        if (Mathf.Abs(angleDiff) > 90)
+        {
+            angleDiff = 90 * Mathf.Sign(angleDiff);
+        } else if (Mathf.Abs(angleDiff) < 15)
+        {
+            angleDiff *= 2;
+        }
+        float impulse = (angleDiff * Mathf.Deg2Rad * 5) * rigidBody.inertia;
+        rigidBody.AddTorque(impulse, ForceMode2D.Impulse);
     }
 }
